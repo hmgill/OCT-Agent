@@ -1,0 +1,21 @@
+# OCT-B agent
+openai-agents>=0.17           # OpenAI Agents SDK (Agent, Runner, MCPServerStreamableHttp)
+openai>=1.40                  # Reasoning model settings for gpt-5.4-mini
+
+# Agent Skills SDK (progressive disclosure)
+agentskills-core>=0.2.3
+agentskills-fs>=0.2.3
+
+# Local image preprocessing
+pillow>=10.0
+numpy>=1.24
+
+# Observability + cost (AgentOps): auto-instruments the Agents SDK and records
+# MCP infra cost (Modal + Horizon) onto tool spans. Optional at runtime — the
+# agent still runs without it (and without AGENTOPS_API_KEY).
+agentops>=0.4
+
+# ── Other optional cost/observability backends ───────────────────────────────
+#   tokencost>=0.1.26        # token -> $ with a maintained price map
+#   litellm>=1.89            # completion_cost() + model price map
+#   langfuse                 # alternative tracing/observability backend

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OCT layer overlay — __IMAGE_ID__</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; background: #0d1117; color: #e6edf3;
+         font: 14px/1.5 -apple-system, system-ui, Segoe UI, Roboto, sans-serif; }
+  header { padding: 14px 18px; border-bottom: 1px solid #21262d; }
+  header h1 { margin: 0; font-size: 15px; font-weight: 600; }
+  header .meta { color: #8b949e; font-size: 12px; margin-top: 2px; }
+  .wrap { display: flex; gap: 18px; padding: 18px; flex-wrap: wrap; }
+  .stage { position: relative; line-height: 0; background: #000;
+           border: 1px solid #21262d; border-radius: 8px; overflow: hidden; }
+  .stage canvas { display: block; max-width: 100%; height: auto; image-rendering: pixelated; }
+  .panel { min-width: 240px; max-width: 320px; }
+  .panel h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .04em;
+              color: #8b949e; margin: 0 0 8px; }
+  .ctl { margin-bottom: 14px; }
+  .swatch { display: inline-block; width: 12px; height: 12px; border-radius: 3px;
+            margin-right: 8px; vertical-align: -1px; border: 1px solid #00000055; }
+  label.row { display: flex; align-items: center; gap: 6px; padding: 3px 0; cursor: pointer; }
+  label.row .name { flex: 1; }
+  label.row .pct { color: #8b949e; font-variant-numeric: tabular-nums; }
+  input[type=range] { width: 100%; }
+  .disclaimer { color: #8b949e; font-size: 11px; margin-top: 12px;
+                border-top: 1px solid #21262d; padding-top: 10px; }
+  button.mini { background: #21262d; color: #e6edf3; border: 1px solid #30363d;
+                border-radius: 6px; padding: 4px 8px; font-size: 12px; cursor: pointer; }
+</style>
+</head>
+<body>
+<header>
+  <h1>OCT retinal layer overlay</h1>
+  <div class="meta">image: __IMAGE_ID__ · map __MAP_W__×__MAP_H__ · display __IMG_W__×__IMG_H__ · MIRAGE 13-class</div>
+</header>
+<div class="wrap">
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <div class="panel">
+    <div class="ctl">
+      <h2>Overlay opacity</h2>
+      <input id="opacity" type="range" min="0" max="100" value="55" />
+    </div>
+    <div class="ctl">
+      <h2>Layers <button class="mini" id="toggleAll">toggle all</button></h2>
+      <div id="legend"></div>
+    </div>
+    <div class="disclaimer">
+      Decision support only — not a diagnosis. Overlay reflects the MIRAGE
+      segmentation map upsampled (nearest-neighbour) to the B-scan; confirm with
+      a qualified ophthalmologist.
+    </div>
+  </div>
+</div>
+<script>
+const BSCAN   = "data:__MEDIA_TYPE__;base64,__BSCAN_B64__";
+const MAP     = __LAYERMAP_JSON__;     // {layermap:[...], h, w}
+const LUT     = __LUT_JSON__;          // {names:[...], colors:[[r,g,b]...], transparent:[...]}
+const IMG_W   = __IMG_W__, IMG_H = __IMG_H__;
+
+const cv = document.getElementById("cv");
+const ctx = cv.getContext("2d");
+const visible = LUT.names.map((_, i) => !LUT.transparent.includes(i));
+let opacity = 0.55;
+
+// Offscreen class-colour canvas at native map resolution.
+const off = document.createElement("canvas");
+off.width = MAP.w; off.height = MAP.h;
+const offCtx = off.getContext("2d");
+
+function paintOffscreen() {
+  const img = offCtx.createImageData(MAP.w, MAP.h);
+  const d = img.data, lm = MAP.layermap, colors = LUT.colors;
+  for (let i = 0; i < lm.length; i++) {
+    const cls = lm[i], p = i * 4;
+    if (cls >= 0 && cls < colors.length && visible[cls]) {
+      d[p] = colors[cls][0]; d[p+1] = colors[cls][1]; d[p+2] = colors[cls][2]; d[p+3] = 255;
+    } else { d[p+3] = 0; }
+  }
+  offCtx.putImageData(img, 0, 0);
+}
+
+const base = new Image();
+base.onload = () => {
+  cv.width = IMG_W || base.naturalWidth;
+  cv.height = IMG_H || base.naturalHeight;
+  paintOffscreen();
+  draw();
+};
+base.src = BSCAN;
+
+function draw() {
+  ctx.clearRect(0, 0, cv.width, cv.height);
+  ctx.imageSmoothingEnabled = true;
+  ctx.drawImage(base, 0, 0, cv.width, cv.height);          // B-scan
+  ctx.imageSmoothingEnabled = false;                       // nearest-neighbour map
+  ctx.globalAlpha = opacity;
+  ctx.drawImage(off, 0, 0, cv.width, cv.height);           // stretch map to display
+  ctx.globalAlpha = 1;
+}
+
+// Legend with per-layer toggles.
+const legend = document.getElementById("legend");
+LUT.names.forEach((name, i) => {
+  const row = document.createElement("label"); row.className = "row";
+  const cb = document.createElement("input"); cb.type = "checkbox"; cb.checked = visible[i];
+  cb.onchange = () => { visible[i] = cb.checked; paintOffscreen(); draw(); };
+  const sw = document.createElement("span"); sw.className = "swatch";
+  sw.style.background = `rgb(${LUT.colors[i].join(",")})`;
+  const nm = document.createElement("span"); nm.className = "name"; nm.textContent = `${i} ${name}`;
+  row.append(cb, sw, nm); legend.append(row);
+});
+document.getElementById("opacity").oninput = (e) => { opacity = e.target.value / 100; draw(); };
+document.getElementById("toggleAll").onclick = () => {
+  const target = visible.some(v => !v);
+  LUT.names.forEach((_, i) => visible[i] = target);
+  legend.querySelectorAll("input").forEach((cb, i) => cb.checked = visible[i]);
+  paintOffscreen(); draw();
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OCT Layer Pixel Stacked Bar</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 24px; color: #111; }
+    .wrap { max-width: 1100px; }
+    .bar { display: flex; width: 100%; height: 84px; border: 1px solid #ccc; overflow: hidden; border-radius: 10px; }
+    .seg { height: 100%; position: relative; min-width: 1px; }
+    .seg span { position: absolute; left: 6px; top: 6px; font-size: 12px; color: #111; text-shadow: 0 1px 0 rgba(255,255,255,.7); }
+    .legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px 16px; margin-top: 18px; }
+    .item { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+    .swatch { width: 14px; height: 14px; border-radius: 3px; flex: 0 0 auto; border: 1px solid rgba(0,0,0,.15); }
+    table { border-collapse: collapse; margin-top: 18px; }
+    td, th { border-bottom: 1px solid #e5e5e5; padding: 8px 10px; text-align: left; }
+    th { background: #fafafa; }
+    .note { margin-top: 14px; color: #444; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <h1>OCT B-scan: stacked retinal-layer pixel counts</h1>
+  <p>Total segmented pixels counted: 16384</p>
+  <div class="bar" aria-label="stacked bar plot of retinal layer pixel counts">
+    <div class="seg" style="width: 50.280762%; background: #d9d9d9;" title="Background: 8238 pixels (50.28%)"></div>
+    <div class="seg" style="width: 30.377197%; background: #8dd3c7;" title="Vitreous: 4977 pixels (30.38%)"></div>
+    <div class="seg" style="width: 2.172852%; background: #1f77b4;" title="RNFL: 356 pixels (2.17%)"></div>
+    <div class="seg" style="width: 1.684570%; background: #aec7e8;" title="GCL+IPL: 276 pixels (1.68%)"></div>
+    <div class="seg" style="width: 2.642822%; background: #ffbb78;" title="INL: 433 pixels (2.64%)"></div>
+    <div class="seg" style="width: 2.551270%; background: #ff7f0e;" title="OPL: 418 pixels (2.55%)"></div>
+    <div class="seg" style="width: 1.690674%; background: #98df8a;" title="ONL: 277 pixels (1.69%)"></div>
+    <div class="seg" style="width: 5.114746%; background: #2ca02c;" title="ELM: 838 pixels (5.11%)"></div>
+    <div class="seg" style="width: 0.823975%; background: #9467bd;" title="IS/OS: 135 pixels (0.82%)"></div>
+    <div class="seg" style="width: 0.457764%; background: #d62728;" title="RPE: 75 pixels (0.46%)"></div>
+    <div class="seg" style="width: 0.976562%; background: #c49c94;" title="BM: 160 pixels (0.98%)"></div>
+    <div class="seg" style="width: 1.226807%; background: #7f7f7f;" title="Choroid: 201 pixels (1.23%)"></div>
+  </div>
+  <div class="legend">
+    <div class="item"><div class="swatch" style="background:#d9d9d9"></div><div>Background: 8238</div></div>
+    <div class="item"><div class="swatch" style="background:#8dd3c7"></div><div>Vitreous: 4977</div></div>
+    <div class="item"><div class="swatch" style="background:#1f77b4"></div><div>RNFL: 356</div></div>
+    <div class="item"><div class="swatch" style="background:#aec7e8"></div><div>GCL+IPL: 276</div></div>
+    <div class="item"><div class="swatch" style="background:#ffbb78"></div><div>INL: 433</div></div>
+    <div class="item"><div class="swatch" style="background:#ff7f0e"></div><div>OPL: 418</div></div>
+    <div class="item"><div class="swatch" style="background:#98df8a"></div><div>ONL: 277</div></div>
+    <div class="item"><div class="swatch" style="background:#2ca02c"></div><div>ELM: 838</div></div>
+    <div class="item"><div class="swatch" style="background:#9467bd"></div><div>IS/OS: 135</div></div>
+    <div class="item"><div class="swatch" style="background:#d62728"></div><div>RPE: 75</div></div>
+    <div class="item"><div class="swatch" style="background:#c49c94"></div><div>BM: 160</div></div>
+    <div class="item"><div class="swatch" style="background:#7f7f7f"></div><div>Choroid: 201</div></div>
+  </div>
+  <table>
+    <thead><tr><th>Layer</th><th>Pixels</th><th>Fraction</th></tr></thead>
+    <tbody>
+      <tr><td>Background</td><td>8238</td><td>50.28%</td></tr>
+      <tr><td>Vitreous</td><td>4977</td><td>30.38%</td></tr>
+      <tr><td>RNFL</td><td>356</td><td>2.17%</td></tr>
+      <tr><td>GCL+IPL</td><td>276</td><td>1.68%</td></tr>
+      <tr><td>INL</td><td>433</td><td>2.64%</td></tr>
+      <tr><td>OPL</td><td>418</td><td>2.55%</td></tr>
+      <tr><td>ONL</td><td>277</td><td>1.69%</td></tr>
+      <tr><td>ELM</td><td>838</td><td>5.11%</td></tr>
+      <tr><td>IS/OS</td><td>135</td><td>0.82%</td></tr>
+      <tr><td>RPE</td><td>75</td><td>0.46%</td></tr>
+      <tr><td>BM</td><td>160</td><td>0.98%</td></tr>
+      <tr><td>Choroid</td><td>201</td><td>1.23%</td></tr>
+    </tbody>
+  </table>
+  <p class="note">Interpretive note: the histogram is dominated by Background and Vitreous, which can happen when the scan includes substantial non-retinal space or off-retinal regions. The retinal layers themselves are present but relatively small by pixel count.</p>
+</div>
+</body>
+</html>

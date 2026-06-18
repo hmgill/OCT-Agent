@@ -1,0 +1,25 @@
+{
+  "servers": [
+    {
+      "key": "mirage",
+      "url": "${MIRAGE_MCP_URL:-https://mirage.fastmcp.app/mcp}",
+      "timeout": 300,
+      "description": "MIRAGE multimodal retinal OCT/SLO foundation model. Tools: extract_features, reconstruct_oct, segment_layers, health.",
+      "gpu_type": "a10g",
+      "modal_rate_per_s": 0.000306
+    },
+    {
+      "key": "lo_vlm",
+      "url": "${LO_VLM_MCP_URL:-https://lo-vlm.fastmcp.app/mcp}",
+      "timeout": 120,
+      "description": "LO-VLM BLIP-based OCT layer-level captioner. Tools: caption_oct, health.",
+      "gpu_type": "t4",
+      "modal_rate_per_s": 0.000164
+    }
+  ],
+  "infra_cost": {
+    "comment": "Per-second compute rates for MCP-call cost. Modal GPU rates captured 2026-06; multiply by region (1.25-2.5x)/non-preemption (3x) as needed. Horizon has no public per-second rate ('pay only for compute you use') - set horizon_rate_per_s from your plan.",
+    "modal_multiplier": "${MODAL_MULTIPLIER:-1.0}",
+    "horizon_rate_per_s": "${HORIZON_RATE_PER_S:-0.0000131}"
+  }
+}
