@@ -76,31 +76,6 @@ provider — it is not a Python package.
                                     reconstruct_oct/health
 ```
 
-### The base64 problem (why local wrappers, not raw MCP attachment)
-
-Every MIRAGE/LO-VLM tool takes a base64 image as an argument. The Agents SDK can
-attach an MCP server straight to an `Agent` and auto-expose its tools — but then
-the **model** would have to emit the base64 itself, which is impossible in
-practice and would blow the context window. So:
-
-- the agent passes small **`image_id` handles**, never bytes;
-- `OCTModelClients` (in `mcp_bridge.py`) owns the live MCP sessions and injects
-  base64 only at call time;
-- bulky outputs (embedding matrices, 128×128 layer maps, reconstructions) are
-  stored as **artifacts** and the model gets a compact summary + an
-  `artifact_id`, not the raw arrays.
-
-This is the deliberate engineering reason MCP is reached via local tools here.
-
-### Why `agent/` and not `agents/`
-
-The OpenAI Agents SDK imports as the top-level module **`agents`**. A top-level
-`agents/` directory on `sys.path` would shadow it and break `from agents import
-Agent`. The project root is flat (so `tools/` and `skills/` are top-level), so
-the agent-definition directory is named **`agent/`** (singular) to stay out of
-the SDK's namespace. `run.py` puts the project root on `sys.path`; run it with
-`python run.py` from the root (or `python oct_b_agent/run.py` from the parent).
-
 ## Setup
 
 ```bash
